@@ -52,45 +52,57 @@ Vagrant.configure("2") do |config|
         SHELL
         
         case boxname.to_s
+        #when "R1"
+        #  box.vm.provision "shell", run: "always", inline: <<-SHELL
+        #    yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
+        #    echo "toor" | sudo passwd root --stdin
+        #    cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
+        #    systemctl start quagga
+        #    systemctl enable quagga
+        #    setsebool -P zebra_write_config 1
+        #    cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
+        #    chown quagga:quaggavt /etc/quagga/ospfd.conf
+        #    systemctl strat ospfd.service 
+        #    systemctl enable ospfd.service 
+        #    SHELL
+        #when "R2"
+        #  box.vm.provision "shell", run: "always", inline: <<-SHELL
+        #    yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
+        #    echo "toor" | sudo passwd root --stdin
+        #    cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
+        #    systemctl start quagga
+        #    systemctl enable quagga
+        #    setsebool -P zebra_write_config 1
+        #    cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
+        #    chown quagga:quaggavt /etc/quagga/ospfd.conf
+        #    systemctl strat ospfd.service 
+        #    systemctl enable ospfd.service 
+        #    SHELL
+        #when "R3"
+        #  box.vm.provision "shell", run: "always", inline: <<-SHELL
+        #    yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
+        #   echo "toor" | sudo passwd root --stdin
+        #    cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
+        #    systemctl start quagga
+        #    systemctl enable quagga
+        #    setsebool -P zebra_write_config 1
+        #    cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
+        #    chown quagga:quaggavt /etc/quagga/ospfd.conf
+        #    systemctl strat ospfd.service 
+        #    systemctl enable ospfd.service 
+        #    SHELL
         when "R1"
-          box.vm.provision "shell", run: "always", inline: <<-SHELL
-            yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
-            echo "toor" | sudo passwd root --stdin
-            cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
-            systemctl start quagga
-            systemctl enable quagga
-            setsebool -P zebra_write_config 1
-            cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
-            chown quagga:quaggavt /etc/quagga/ospfd.conf
-            systemctl strat ospfd.service 
-            systemctl enable ospfd.service 
-            SHELL
+        config.vm.provision "ansible" do |ansible|
+            ansible.playbook = "R1.yml"
+          end
         when "R2"
-          box.vm.provision "shell", run: "always", inline: <<-SHELL
-            yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
-            echo "toor" | sudo passwd root --stdin
-            cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
-            systemctl start quagga
-            systemctl enable quagga
-            setsebool -P zebra_write_config 1
-            cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
-            chown quagga:quaggavt /etc/quagga/ospfd.conf
-            systemctl strat ospfd.service 
-            systemctl enable ospfd.service 
-            SHELL
+        config.vm.provision "ansible" do |ansible|
+            ansible.playbook = "R2.yml"
+          end
         when "R3"
-          box.vm.provision "shell", run: "always", inline: <<-SHELL
-            yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
-            echo "toor" | sudo passwd root --stdin
-            cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
-            systemctl start quagga
-            systemctl enable quagga
-            setsebool -P zebra_write_config 1
-            cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
-            chown quagga:quaggavt /etc/quagga/ospfd.conf
-            systemctl strat ospfd.service 
-            systemctl enable ospfd.service 
-            SHELL
+        config.vm.provision "ansible" do |ansible|
+            ansible.playbook = "R3.yml"
+          end
         end
 
     end

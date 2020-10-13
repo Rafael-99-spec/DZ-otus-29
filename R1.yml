@@ -20,15 +20,37 @@
         state: present
       tags:
         - quagga
+    
+    - name: edit sysctl ip_forward
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: yes
 
-    - name: shell script    
-      shell: echo "toor" && sudo passwd root --stdin
-      shell: setsebool -P zebra_write_config 1
-
-    - name: cp 
+    - name: Manage zebra conf
       template:
-        src: /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample
+        src: templates/R1-zebra.j2
         dest: /etc/quagga/zebra.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify: restart zebra
+
+    - name: Manage ospfd conf
+      template:
+        src: templates/R1-ospfd.j2
+        dest: /etc/quagga/ospfd.conf
+        owner: root
+        group: root
+        mode: 0644
+      notify: restart ospfd
+
+    - name: Put SELinux in permissive mode, logging actions that would be blocked.
+      selinux:
+        policy: targeted
+        state: permissive
 
     - name: Start daemon zebra
       systemd: 

@@ -1,0 +1,43 @@
+---
+- name: Configure R3
+  hosts: R3
+  become: true 
+  tasks:
+     
+    - name: Install lynx net-tools epel-release
+      yum:
+        name:
+          - lynx
+          - net-tools
+          - epel-release
+        state: present
+      tags:
+        - epel-release
+
+    - name: install quagga
+      yum:
+        name: quagga
+        state: present
+      tags:
+        - quagga
+
+    - name: shell script    
+      shell: echo "toor" && sudo passwd root --stdin
+      shell: setsebool -P zebra_write_config 1
+
+    - name: cp 
+      template:
+        src: /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample
+        dest: /etc/quagga/zebra.conf
+
+    - name: Start daemon zebra
+      systemd: 
+        name: zebra
+        state: started
+        enabled: yes
+
+    - name: Start daemon ospfd
+      systemd:
+        name: ospfd
+        state: started
+        enabled: yes

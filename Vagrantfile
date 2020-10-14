@@ -1,113 +1,57 @@
 # -*- mode: ruby -*-
 # vim: set ft=ruby :
-# -*- mode: ruby -*-
-# vim: set ft=ruby :
 
-MACHINES = {
-  :R1 => {
-        :box_name => "centos/7",
-        #:public => {:ip => '10.10.10.1', :adapter => 1},
-        :net => [
-                   {ip: '1.1.1.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "network-1"},
-                   {ip: '2.2.2.1', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "network-2"},
-                ]
-  },
-  :R2 => {
-        :box_name => "centos/7",
-        :net => [
-                   {ip: '2.2.2.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "network-2"},
-                   {ip: '3.3.3.1', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "network-3"},
-                ]
-  },
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+  config.vm.box_check_update = true
+ #config.vbguest.auto_update = false
+    
+	
+  config.vm.define "r1" do |r1|
+    r1.vm.hostname = 'r1'
+	r1.vm.network "private_network", ip: "172.20.10.1", netmask: "255.255.255.0" , adapter: 2,  virtualbox__intnet: "r1"
+    r1.vm.network "private_network", ip: "192.168.0.1", netmask: "255.255.255.252" , adapter: 3,  virtualbox__intnet: "r1r2"
+	r1.vm.network "private_network", ip: "192.168.200.1", netmask: "255.255.255.252" , adapter: 4,  virtualbox__intnet: "r1r3"
+	r1.vm.provider :virtualbox do |v|
+		v.name = "r1"
+    end
+
+	r1.vm.provision "ansible" do |ansible|
+        ansible.playbook = "r1.yml"
+	end
+	
+  end
   
-  :R3 => {
-        :box_name => "centos/7",
-        :net => [
-                   {ip: '3.3.3.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "network-3"},
-                   {ip: '1.1.1.1', adapter: 3, netmask: "255.255.255.0", virtualbox__intnet: "network-1"},
-                ]
-  },
-}
-
-Vagrant.configure("2") do |config|
-
-  MACHINES.each do |boxname, boxconfig|
-
-    config.vm.define boxname do |box|
-
-        box.vm.box = boxconfig[:box_name]
-        box.vm.host_name = boxname.to_s
-
-        boxconfig[:net].each do |ipconf|
-          box.vm.network "private_network", ipconf
-        end
-        
-        if boxconfig.key?(:public)
-          box.vm.network "public_network", boxconfig[:public]
-        end
-
-        box.vm.provision "shell", inline: <<-SHELL
-          mkdir -p ~root/.ssh
-                cp ~vagrant/.ssh/auth* ~root/.ssh
-        SHELL
-        
-        case boxname.to_s
-        #when "R1"
-        #  box.vm.provision "shell", run: "always", inline: <<-SHELL
-        #    yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
-        #    echo "toor" | sudo passwd root --stdin
-        #    cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
-        #    systemctl start quagga
-        #    systemctl enable quagga
-        #    setsebool -P zebra_write_config 1
-        #    cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
-        #    chown quagga:quaggavt /etc/quagga/ospfd.conf
-        #    systemctl strat ospfd.service 
-        #    systemctl enable ospfd.service 
-        #    SHELL
-        #when "R2"
-        #  box.vm.provision "shell", run: "always", inline: <<-SHELL
-        #    yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
-        #    echo "toor" | sudo passwd root --stdin
-        #    cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
-        #    systemctl start quagga
-        #    systemctl enable quagga
-        #    setsebool -P zebra_write_config 1
-        #    cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
-        #    chown quagga:quaggavt /etc/quagga/ospfd.conf
-        #    systemctl strat ospfd.service 
-        #    systemctl enable ospfd.service 
-        #    SHELL
-        #when "R3"
-        #  box.vm.provision "shell", run: "always", inline: <<-SHELL
-        #    yum install epel-release -y && yum install net-tools tcpdump nano vim quagga -y
-        #   echo "toor" | sudo passwd root --stdin
-        #    cp /usr/share/doc/quagga-0.99.22.4/zebra.conf.sample /etc/quagga/zebra.conf
-        #    systemctl start quagga
-        #    systemctl enable quagga
-        #    setsebool -P zebra_write_config 1
-        #    cp /usr/share/doc/quagga-0.99.22.4/ospfd.conf.sample /etc/quagga/ospfd.conf
-        #    chown quagga:quaggavt /etc/quagga/ospfd.conf
-        #    systemctl strat ospfd.service 
-        #    systemctl enable ospfd.service 
-        #    SHELL
-        when "R1"
-        config.vm.provision "ansible" do |ansible|
-            ansible.playbook = "R1.yml"
-          end
-        when "R2"
-        config.vm.provision "ansible" do |ansible|
-            ansible.playbook = "R2.yml"
-          end
-        when "R3"
-        config.vm.provision "ansible" do |ansible|
-            ansible.playbook = "R3.yml"
-          end
-        end
+  config.vm.define "r2", primary: true do |r2|
+    r2.vm.hostname = 'r2'
+	r2.vm.network "private_network", ip: "172.20.20.1", netmask: "255.255.255.0" , adapter: 2,  virtualbox__intnet: "r2"
+    r2.vm.network "private_network", ip: "192.168.0.2", netmask: "255.255.255.252" , adapter: 3,  virtualbox__intnet: "r1r2"
+	r2.vm.network "private_network", ip: "192.168.100.2", netmask: "255.255.255.252" , adapter: 4,  virtualbox__intnet: "r2r3"
+	r2.vm.provider :virtualbox do |v|
+		v.name = "r2"
 
     end
 
+	r2.vm.provision "ansible" do |ansible|
+        ansible.playbook = "r2.yml"
+	end
+	
+  end
+
+  config.vm.define "r3" do |r3|
+    r3.vm.hostname = 'r3'
+	r3.vm.network "private_network", ip: "172.20.30.1", netmask: "255.255.255.0" , adapter: 2,  virtualbox__intnet: "r3"
+    r3.vm.network "private_network", ip: "192.168.200.2", netmask: "255.255.255.252" , adapter: 3,  virtualbox__intnet: "r1r3"
+	r3.vm.network "private_network", ip: "192.168.100.1", netmask: "255.255.255.252" , adapter: 4,  virtualbox__intnet: "r2r3"
+	r3.vm.provider :virtualbox do |v|
+		v.name = "r3"
+    end
+
+	r3.vm.provision "ansible" do |ansible|
+        ansible.playbook = "r3.yml"
+	end
+	
   end
   
-  
 end
+

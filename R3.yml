@@ -36,7 +36,6 @@
         owner: root
         group: root
         mode: 0644
-      notify: restart zebra
 
     - name: Manage ospfd conf
       template:
@@ -45,7 +44,6 @@
         owner: root
         group: root
         mode: 0644
-      notify: restart ospfd
 
     - name: Put SELinux in permissive mode, logging actions that would be blocked.
       selinux:

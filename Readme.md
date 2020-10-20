@@ -93,8 +93,6 @@ r3(config-if)# ip ospf  cost 1000
 r3(config-if)# exit
 r3(config)# exit
 r3# exit
-```
-```
 [root@r1 ~]# tracepath -n 172.20.20.1
  1?: [LOCALHOST]                                         pmtu 1500
  1:  172.20.20.1                                           0.615ms reached

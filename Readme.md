@@ -66,11 +66,11 @@ default via 10.0.2.2 dev eth0 proto dhcp metric 100
      Resume: pmtu 1500 hops 1 back 1 
 ```
 
-Поменяв вес пути в подсети 192.168.0.0/30(которая связывает r1 и r2), для интерфейса 192.168.0.1 роутера r1, например до 1000, получим ассиметричную маршрутизацию:
+Меняя вес пути в подсети 192.168.0.0/30(которая связывает r1 и r2), для интерфейса 192.168.0.1 роутера r1, например до 1000, получим ассиметричную маршрутизацию:
 ```
-r1# configure  terminal 
-r1(config)# interface eth2
-r1(config-if)# ip ospf  cost  1000
+r1# conf t 
+r1(config)# int eth2
+r1(config-if)# ip ospf cost 1000
 r1(config-if)# exit
 r1(config)# exit
 r1# exit
